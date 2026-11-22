@@ -9,11 +9,11 @@ Court of Embers — an original duel card game. Four elements on one table: comm
 ## Run it
 
 ```sh
-# Play it: serve the game folder and open it in a desktop browser
+# Open the game in a desktop browser
 python3 -m http.server 8080 --directory game
-# then open http://localhost:8080
+# then visit http://localhost:8080
 
-# Rebuild the submission output (what main.ts hands to the grader)
+# Write out/ again, the way the grader does
 mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 ```
 
@@ -29,8 +29,8 @@ Each round both duelists commit one card face down, then reveal. Ember beats Gal
 
 - `game/` — the playable game as static files: `index.html` plus `src/` (config, deck, ai, state, render, input, audio, shots, main). No libraries, no network.
 - `screenshots/` — 4 real renders of the game's own code (the first is the cover). Each one is a staged frame of the game's own code: `?shot=play` (a mid-duel reveal), `?shot=title` (the court), `?shot=win` (victory), `?shot=loss` (defeat).
-- `main.ts` — the entry program: copies `game/` and `screenshots/` to the output and writes `dossier.json` with the vendored make.fun library.
-- `vendor/makefun-game.ts` — the kit's dossier library, unchanged.
+- `main.ts` — the entry program: it hands the game and the screenshots to the output directory and writes `dossier.json` through the vendored make.fun library.
+- `vendor/makefun-game.ts` — the dossier library from the kit, byte for byte as shipped.
 
 ---
 
