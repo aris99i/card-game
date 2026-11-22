@@ -5,27 +5,26 @@
 // dossier library. The game itself is static files a desktop browser
 // loads offline; this file only hands it in.
 //
-// To reproduce the hand-in locally:
+// To reproduce the hand-in locally, run:
 //   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 
 import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
+// The dossier library lives beside the entry, vendored from the kit.
 import { buildDossier } from './vendor/makefun-game.ts';
 
 const repoRoot = fileURLToPath(new URL('.', import.meta.url));
 const outputDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
-// The gate's own caps, so a hand-in this program writes is one the sealed
-// scorer accepts: at most 4 screenshots of 256 KiB each, a game/ of at
-// most 993 files and 48 MiB, and a dossier text of at most 160 KiB.
-const CAPS = {
-  text_max_bytes: 163840,
-  screenshots: { max: 4, max_bytes: 262144 },
-  game_max_files: 993,
-  game_max_bytes: 50331648,
-  game_path_max_bytes: 1000,
-};
+// The gate's own caps, as the competition's RULES.txt states them: a
+// dossier text of at most 160 KiB, at most 4 screenshots of 256 KiB each,
+// a game/ of at most 993 files and 48 MiB, paths at most 1000 bytes.
+const TEXT_CAP = 163840;
+const SHOT_CAP = { max: 4, max_bytes: 262144 };
+const GAME_FILE_CAP = 993;
+const GAME_BYTE_CAP = 50331648;
+const GAME_PATH_CAP = 1000;
 
 function copyDir(source, target) {
   mkdirSync(target, { recursive: true });
@@ -45,5 +44,11 @@ if (existsSync(shotsDir)) {
   copyDir(shotsDir, join(outputDir, 'screenshots'));
 }
 
-const dossierText = buildDossier(outputDir, CAPS);
+const dossierText = buildDossier(outputDir, {
+  text_max_bytes: TEXT_CAP,
+  screenshots: SHOT_CAP,
+  game_max_files: GAME_FILE_CAP,
+  game_max_bytes: GAME_BYTE_CAP,
+  game_path_max_bytes: GAME_PATH_CAP,
+});
 writeFileSync(join(outputDir, 'dossier.json'), dossierText);
